@@ -1,0 +1,164 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "BucketName": {
+      "Type": "String",
+      "Description": "Enter the name for your S3 bucket"
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "AccessControl": "PublicRead",
+        "WebsiteConfiguration": {
+          "IndexDocument": "index.html",
+          "ErrorDocument": "error.html"
+        },
+        "BucketName": { "Ref" : "BucketName" }
+      }
+    },
+    "BucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Id": "MyBucketPolicy",
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "PublicReadForGetBucketObjects",
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": "s3:GetObject",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "Bucket"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Sid": "BucketList",
+              "Effect": "Allow",
+              "Action": ["s3:ListBucket"],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "Bucket"
+                    }
+                  ]
+                ]
+              },
+              "Principal": {
+                "AWS" : { "Fn::GetAtt" : [ "BucketUser", "Arn" ] }
+              }
+            },
+            {
+              "Sid": "BucketFullAccess",
+              "Effect": "Allow",
+              "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "Bucket"
+                    },
+                    "/*"
+                  ]
+                ]
+              },
+              "Principal": {
+                "AWS" : { "Fn::GetAtt" : [ "BucketUser", "Arn" ] }
+              }
+            }
+          ]
+        },
+        "Bucket": {
+          "Ref": "Bucket"
+        }
+      },
+      "DependsOn": [
+        "BucketUser"
+      ]
+    },
+    "BucketUser": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "UserName": {
+          "Fn::Join": [
+            "",
+            [
+              "bucket-",
+              {
+                "Ref": "BucketName"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "BucketKey": {
+      "Type": "AWS::IAM::AccessKey",
+      "Properties": {
+        "UserName": {
+          "Ref": "BucketUser"
+        }
+      },
+      "DependsOn": [
+        "BucketUser"
+      ]
+    }
+  },
+  "Outputs": {
+    "AccessKeyForBucketUser": {
+      "Value": {
+        "Ref": "BucketKey"
+      }
+    },
+    "SecretKeyForBucketUser": {
+      "Value": {
+        "Fn::GetAtt": [
+          "BucketKey",
+          "SecretAccessKey"
+        ]
+      }
+    },
+    "WebsiteURL": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Bucket",
+          "WebsiteURL"
+        ]
+      },
+      "Description": "URL for website hosted on S3"
+    },
+    "S3BucketSecureURL": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": [
+                "Bucket",
+                "DomainName"
+              ]
+            }
+          ]
+        ]
+      },
+      "Description": "Name of S3 bucket to hold website content"
+    }
+  }
+}
