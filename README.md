@@ -1,6 +1,6 @@
 ## CloudFormation Create S3 Website
 
-[Click to create stack](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=S3+Bucket+Website&templateURL=https://s3-bucket-site.s3.amazonaws.com/template.json)
+[Click to create stack](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=S3BucketWebsite&templateURL=https://s3-bucket-site.s3.amazonaws.com/template-v0-a.json)
 
 Template for creating an s3 website with a user for uploading elements to the bucket created.
 

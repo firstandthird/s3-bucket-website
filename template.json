@@ -118,6 +118,52 @@
       "DependsOn": [
         "BucketUser"
       ]
+    },
+    "BucketUserPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties" : {
+        "PolicyDocument": {
+          "Id": "",
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "VisualEditor0",
+              "Effect": "Allow",
+              "Action": [
+                "s3:ListBucket",
+                "s3:HeadBucket"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "Bucket"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Sid": "VisualEditor1",
+              "Effect": "Allow",
+              "Action": "s3:*",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "Bucket"
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      }
     }
   },
   "Outputs": {
