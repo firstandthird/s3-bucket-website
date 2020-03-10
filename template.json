@@ -122,12 +122,13 @@
     "BucketUserPolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties" : {
+        "PolicyName": "SingleBucketManage",
         "PolicyDocument": {
           "Id": "",
           "Version": "2012-10-17",
           "Statement": [
             {
-              "Sid": "VisualEditor0",
+              "Sid": "ListBucketPerms",
               "Effect": "Allow",
               "Action": [
                 "s3:ListBucket",
@@ -146,7 +147,7 @@
               }
             },
             {
-              "Sid": "VisualEditor1",
+              "Sid": "AllBucketPerms",
               "Effect": "Allow",
               "Action": "s3:*",
               "Resource": {
@@ -162,8 +163,24 @@
               }
             }
           ]
-        }
-      }
+        },
+        "Users": [
+          { 
+            "Fn::Join": [
+              "",
+              [
+                "bucket-",
+                {
+                  "Ref": "BucketName"
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      "DependsOn": [
+        "BucketUser"
+      ]
     }
   },
   "Outputs": {
